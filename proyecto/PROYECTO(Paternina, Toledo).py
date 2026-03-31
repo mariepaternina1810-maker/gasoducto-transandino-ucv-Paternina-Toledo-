@@ -78,14 +78,18 @@ def calcular_compresor(p_in, p_out, q_mmscfd, t1_k=293.15):
     
     return hp, t2_k
 
-def calcular_tac(l_km, d_pulgadas, hp_total, costo_kwh, tasa_interes_pct, costo_acero_m, vida_util_anios=20):
+def calcular_tac(l_km, d_pulgadas, hp_total, costo_kwh, tasa_interes_pct, vida_util_anios=20):
     """
-    Calcula el Costo Total Anualizado (TAC) usando directamente el costo por metro lineal.
+    Calcula el Costo Total Anualizado (TAC) = (CAPEX * CRF) + OPEX.
+    Retorna también el desglose para poder graficarlo después.
     """
-    # 1. CAPEX de la Tubería (Cálculo Directo)
-    capex_tuberia = (l_km * 1000) * costo_acero_m 
+    # 1. CAPEX de la Tubería
+    # Obtenemos el costo por metro del diccionario de tuberías
+    costo_por_metro = tuberias[d_pulgadas]["costo_m"]
+    capex_tuberia = (l_km * 1000) * costo_por_metro # Convertimos los 400 km a metros
     
     # 2. CAPEX de Compresores
+    # (Asumimos un costo estándar de 1500 USD por cada HP instalado si el profe no dio un valor específico)
     costo_hp_instalado = 1500 
     capex_compresores = hp_total * costo_hp_instalado
     
@@ -97,6 +101,7 @@ def calcular_tac(l_km, d_pulgadas, hp_total, costo_kwh, tasa_interes_pct, costo_
     crf = (i * ((1 + i)**n)) / (((1 + i)**n) - 1)
     
     # 4. OPEX (Costo operativo de energía anual)
+    # 1 HP equivale a 0.7457 kW. Asumimos operación continua 24/7 los 365 días del año.
     kw_total = hp_total * 0.7457
     opex_energia = kw_total * 24 * 365 * costo_kwh
     
@@ -139,7 +144,7 @@ with st.sidebar:
     
     st.subheader("1. Parámetros Económicos")
     costo_energia = st.number_input("Costo de energía (USD/kWh)", min_value=0.0, value=0.10, step=0.01)
-    costo_acero_m = st.number_input("Costo del acero ($/m)", min_value=0.0, value=185.0, step=5.0)
+    factor_acero = st.number_input("Ajuste precio del acero (1.0 = Precio Base Tabla)", min_value=0.5, value=1.0, step=0.1))
     tasa_interes = st.number_input("Tasa de interés (%)", min_value=0.0, value=10.0, step=0.5)
     
     st.subheader("2. Selección de Material")
@@ -228,7 +233,7 @@ if simular:
                 p_actual = p_llegada # Esta es la presión final de entrega
         
         # 2. Cálculos Económicos
-        tac, capex_tub, capex_comp, opex = calcular_tac(LONGITUD_TOTAL_KM, diametro, hp_total, costo_energia, tasa_interes)
+        tac, capex_tub, capex_comp, opex = calcular_tac(LONGITUD_TOTAL_KM, diametro, hp_total, costo_energia, tasa_interes, factor_acero)
         
         # 3. Actualizamos el Dashboard superior
         metrica_tac.metric(label="Costo Total Anualizado (TAC)", value=f"$ {tac:,.2f}")
