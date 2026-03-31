@@ -144,11 +144,10 @@ with st.sidebar:
     
     st.subheader("1. Parámetros Económicos")
     costo_energia = st.number_input("Costo de energía (USD/kWh)", min_value=0.0, value=0.10, step=0.01)
-    costo_acero = st.number_input("Costo del acero ($/ton)", min_value=0.0, value=1000.0, step=50.0)
     tasa_interes = st.number_input("Tasa de interés (%)", min_value=0.0, value=10.0, step=0.5)
     
     st.subheader("2. Selección de Material")
-    diametro = st.selectbox("Diámetro Comercial (pulgadas)", [12, 16, 20, 24])
+    diametro = st.selectbox("Diámetro Comercial (pulgadas) [tomando en cuenta el costo del acero ($/m)]", [12, 16, 20, 24])
     grado_acero = st.selectbox("Grado del Acero", ["X52", "X60"])
     
     st.subheader("3. Variables Operativas")
