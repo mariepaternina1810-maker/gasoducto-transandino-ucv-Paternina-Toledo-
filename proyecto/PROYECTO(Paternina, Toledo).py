@@ -1,5 +1,22 @@
+import math
 import streamlit as st
 import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
+
+"""
+PROYECTO: Optimización y Simulación Digital de Sistemas de Transporte de Gas
+CURSO: Optimización de Procesos
+PROFESOR: Ricardo Olejnik
+ESTUDIANTES: Paternina Marie y Toledo Carmen
+FECHA: Abril del 2026
+
+Descripción: 
+Esta aplicación web en Streamlit funciona como un Gemelo Digital para el 
+Gasoducto Trans-Andino. Calcula la caída de presión usando la Ecuación 
+de Weymouth, dimensiona estaciones de compresión y evalúa el Costo Total 
+Anualizado (TAC), verificando restricciones operativas y de seguridad.
+"""
 
 # --- 1. BASE DE DATOS TÉCNICA Y CONSTANTES ---
 
@@ -26,7 +43,6 @@ T_SUCCION_K = 293.15  # 20°C pasados a Kelvin
 GAMMA = 0.65
 Z = 0.90
 
-import math
 
 # --- 2. FUNCIONES MATEMÁTICAS ---
 
@@ -41,7 +57,6 @@ def calcular_presion_salida(p_in, q, l_km, d_pulgadas, eficiencia=1.0):
     z = Z
     
     # Término derecho de la ecuación de Weymouth
-    # Nota: El profesor Olejnik usa la constante 433.5. 
     termino_friccion = 433.5 * ((q / eficiencia)**2) * ((l_km * gamma * t_k * z) / (d_pulgadas**5.33))
     
     # Despejamos P2 (P_out)
@@ -58,9 +73,9 @@ def calcular_compresor(p_in, p_out, q_mmscfd, t1_k=293.15):
     Calcula la potencia (HP) y la temperatura de descarga (T2) en Kelvin
     para una estación de compresión.
     """
-    # Constantes típicas (verifica en tus apuntes si el profe dio valores exactos)
+    # Constantes típicas 
     k = 1.3 # Relación de calores específicos Cp/Cv para gas natural
-    r = 10.73 # Constante de los gases (en unidades consistentes con psia y R/K, revisa tu convención)
+    r = 10.73 # Constante de los gases 
     eta = 0.75 # Eficiencia del compresor (asumimos 75% si no se especifica)
     z = Z # Nuestro 0.90 de las condiciones base
     
@@ -122,7 +137,9 @@ def verificar_maop(p_max, d_ext_mm, espesor_mm, grado):
     
     return p_max <= presion_maxima_permitida, presion_maxima_permitida
 
-# 1. Configuración básica de la página (¡siempre va primero!)
+# --- 3. VISUALIZACIÓN DE PÁGINA ---
+
+# 1. Configuración básica de la página 
 st.set_page_config(
     page_title="Gemelo Digital: Gasoducto Trans-Andino",
     page_icon="🏭",
@@ -156,8 +173,6 @@ with st.sidebar:
 # 3. Visualización Principal (Main Panel)
 st.header("📊 Dashboard de Resultados")
 
-import plotly.graph_objects as go
-import plotly.express as px
 
 # Columnas vacías iniciales para las métricas principales
 col1, col2, col3 = st.columns(3)
@@ -179,7 +194,7 @@ st.markdown("---")
 st.header("⚠️ Sistema de Seguridad")
 espacio_alertas = st.empty()
 
-# --- AQUÍ OCURRE LA MAGIA CUANDO PRESIONAS EL BOTÓN ---
+# --- AQUÍ OCURRE LA MAGIA :) ---
 if simular:
     with st.spinner("Simulando Gasoducto Trans-Andino..."):
         # 1. Dividimos el gasoducto en tramos
@@ -200,7 +215,7 @@ if simular:
             distancias.append(distancias[-1] + l_segmento)
             presiones.append(p_llegada)
 
-            # --- ¡NUEVO! ---
+    
             # Si la presión cae a 0, detenemos todo para evitar la división por cero
             if p_llegada <= 0:
                 with espacio_alertas.container():
