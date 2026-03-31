@@ -144,7 +144,7 @@ with st.sidebar:
     
     st.subheader("1. Parámetros Económicos")
     costo_energia = st.number_input("Costo de energía (USD/kWh)", min_value=0.0, value=0.10, step=0.01)
-    factor_acero = st.number_input("Ajuste precio del acero (1.0 = Precio Base Tabla)", min_value=0.5, value=1.0, step=0.1))
+    factor_acero = st.number_input("Ajuste precio del acero (1.0 = Precio Base Tabla)", min_value=0.5, value=1.0, step=0.1)
     tasa_interes = st.number_input("Tasa de interés (%)", min_value=0.0, value=10.0, step=0.5)
     
     st.subheader("2. Selección de Material")
