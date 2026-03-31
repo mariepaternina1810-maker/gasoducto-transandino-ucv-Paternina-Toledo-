@@ -4,20 +4,6 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-"""
-PROYECTO: Optimización y Simulación Digital de Sistemas de Transporte de Gas
-CURSO: Optimización de Procesos
-PROFESOR: Ricardo Olejnik
-ESTUDIANTES: Paternina Marie y Toledo Carmen
-FECHA: Abril del 2026
-
-Descripción: 
-Esta aplicación web en Streamlit funciona como un Gemelo Digital para el 
-Gasoducto Trans-Andino. Calcula la caída de presión usando la Ecuación 
-de Weymouth, dimensiona estaciones de compresión y evalúa el Costo Total 
-Anualizado (TAC), verificando restricciones operativas y de seguridad.
-"""
-
 # --- 1. BASE DE DATOS TÉCNICA Y CONSTANTES ---
 
 # Tabla 1: Tuberías de Acero API 5L (Sch 40)
